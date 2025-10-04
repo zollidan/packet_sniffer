@@ -24,15 +24,15 @@ void ListFolders(const TCHAR* directoryPath, int depth) {
             if (_tcscmp(ffd.cFileName, TEXT(".")) != 0 &&
                 _tcscmp(ffd.cFileName, TEXT("..")) != 0) {
 
-                for (int i = 0; i < depth; i++) {
-                    _tprintf(TEXT("  "));
-                }
-                _tprintf(TEXT("> %s\\\n"), ffd.cFileName);
-
                 _stprintf_s(newPath, MAX_PATH, TEXT("%s\\%s"), directoryPath, ffd.cFileName);
 
                 ListFolders(newPath, depth + 1);
                 }
+        } else {
+            const ULONGLONG fileSize = ((ULONGLONG)ffd.nFileSizeHigh << 32) | ffd.nFileSizeLow;
+            if (convertToMb(fileSize) >= 10000) {
+                _tprintf(TEXT("%s <--- this file is huge!\n"), ffd.cFileName);
+            }
         }
     } while (FindNextFile(hFind, &ffd) != 0);
     FindClose(hFind);
